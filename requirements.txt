@@ -1,0 +1,16 @@
+aiohttp==3.8.1
+aiosignal==1.2.0
+asgiref==3.4.1
+async-timeout==4.0.2
+attrs==21.4.0
+charset-normalizer==2.0.10
+Django==3.2.11
+django-environ==0.8.1
+frozenlist==1.2.0
+idna==3.3
+multidict==5.2.0
+sqlparse==0.4.2
+telepot==12.7
+tzdata==2021.5
+urllib3==1.26.8
+yarl==1.7.2
