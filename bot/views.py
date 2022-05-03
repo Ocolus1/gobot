@@ -17,7 +17,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 token = settings.TOKEN
 # webhook_url = f"https://goblin.cypherspot.dev/telegram/{secret}/"
-webhook_url = f"https://66ab-105-112-189-223.ngrok.io/telegram/"
+webhook_url = f"https://8eb0-160-152-198-93.eu.ngrok.io/telegram/"
 bot = telepot.Bot(token)
 if webhook_url != bot.getWebhookInfo()['url']:
     bot.setWebhook(webhook_url)
@@ -360,8 +360,6 @@ def telegram(request):
                 return JsonResponse({}, status=200)
             # Only to use at the begining
             else:
-                print(func, "man")
-                print(cmd, "man")
                 if cmd == "/start":
                     if Verification.objects.filter(chat_id=chat_id).exists():
                         verify = Verification.objects.get(chat_id=chat_id)
@@ -390,7 +388,7 @@ def telegram(request):
                             verify.save()
                             msg = f"*Your verification question is:* \n \n *What is {x} + {y} ?*"
                             bot.sendMessage(chat_id, msg, parse_mode="Markdown")
-                elif cmd == "joined":
+                elif cmd == "joined" or cmd == "🔙Back":
                     check = check_joined(chat_id)
                     if check == "▶️ Refer and Earn GOB!":
                         key = ReplyKeyboardMarkup(keyboard=[
@@ -413,6 +411,122 @@ def telegram(request):
                     elif check == "❌ Must join all channel":
                         bot.sendMessage(chat_id, "❌ Must join all channel", 
                         parse_mode="Markdown")
+                elif cmd == "⚙️Set wallet":
+                    if Ethaddress.objects.filter(chat_id=chat_id).exists():
+                        eth = Ethaddress.objects.get(chat_id=chat_id)
+                        add = eth.address
+                        msg = (f"""
+                            *Account Settings ⚙️ \n \n🤴 User : {fname} \n🆔 User ID : {chat_id} \nWallet : {add}*
+                        """)
+                        key = InlineKeyboardMarkup(inline_keyboard=[
+                            [InlineKeyboardButton(text='Change wallet address ✏️', callback_data='changewallet')],
+                        ])
+                        bot.sendMessage(chat_id , msg, reply_markup=key, parse_mode='Markdown')
+                    else :
+                        msg = (f"""
+                            *Account Settings ⚙️ \n \n🤴 User : {fname} \n🆔 User ID : {chat_id} \nWallet : You have not set your wallet address*
+                        """)
+                        key = InlineKeyboardMarkup(inline_keyboard=[
+                            [InlineKeyboardButton(text='Set wallet ✏️', callback_data='setwallet')],
+                        ])
+                        bot.sendMessage(chat_id , msg, reply_markup=key, parse_mode='Markdown')
+                elif cmd == "setwallet" or cmd == "changewallet":
+                    msg = "*✏️Send your BSC wallet address*"
+                    bot.sendMessage(chat_id, msg, parse_mode='Markdown')
+                elif cmd == "💰 Balance":
+                    if Link.objects.filter(chat_id=chat_id).exists():
+                        link = Link.objects.get(chat_id=chat_id)
+                        msg = f"🤴 User : {link.fname} \n \n 💰 Balance : {link.points} points"
+                        bot.sendMessage(chat_id, msg, parse_mode='Markdown')
+                    else:
+                        msg = "*Fill your social media info to get your balance*"
+                        bot.sendMessage(chat_id, msg, parse_mode='Markdown')
+                elif cmd == "👫 Referral":
+                    bot.sendMessage(chat_id, _mylink(chat_id, fname), parse_mode='Markdown')
+                elif cmd == "💥 Top 10":
+                    bot.sendMessage(chat_id, _top(chat_id), parse_mode='Markdown')
+                elif cmd == "💬 Social Media":
+                    key = ReplyKeyboardMarkup(keyboard=[
+                            [
+                                KeyboardButton(text="📞Telegram"),
+                                KeyboardButton(text="💬Twitter"),
+                            ],
+                            [
+                                KeyboardButton(text="📱Facebook"),
+                                KeyboardButton(text="📷Instagram"),
+                            ],
+                            [
+                                KeyboardButton(text="☎️Youtube"),
+                                KeyboardButton(text="🖊️Reddit"),
+                            ],
+                            [
+                                KeyboardButton(text="🔙Back"),
+                            ],
+                        ],
+                            resize_keyboard = True
+                    )
+                    msg = "*Welcome to the social media menu*"
+                    bot.sendMessage(chat_id , msg, reply_markup=key, parse_mode='Markdown')
+                elif cmd == "📞Telegram":
+                    key = InlineKeyboardMarkup(inline_keyboard=[
+                            [InlineKeyboardButton(text='Set Username ✏️', callback_data='settele')],
+                            [InlineKeyboardButton(text='Change Username ✏️', callback_data='changetele')],
+                    ])
+                    bot.sendMessage(chat_id , _mytele(chat_id), reply_markup=key, parse_mode='Markdown')
+                elif cmd == "settele" or cmd == "changetele":
+                    msg = "*Input your telegram username*"
+                    bot.sendMessage(chat_id, msg, parse_mode='Markdown')
+                elif cmd == "💬Twitter":
+                    key = InlineKeyboardMarkup(inline_keyboard=[
+                            [InlineKeyboardButton(text='Set Username ✏️', callback_data='settweet')],
+                            [InlineKeyboardButton(text='Change Username ✏️', callback_data='changetweet')],
+                            [InlineKeyboardButton(text='Set Tweet link ✏️', callback_data='tweetlink')],
+                    ])
+                    bot.sendMessage(chat_id , _mytwitter(chat_id), reply_markup=key, parse_mode='Markdown')
+                elif cmd == "settweet" or cmd == "changetweet":
+                    msg = "*Input your twitter username*"
+                    bot.sendMessage(chat_id, msg, parse_mode='Markdown')
+                elif cmd == "tweetlink":
+                    msg = "*Input your twitter username*"
+                    bot.sendMessage(chat_id, msg, parse_mode='Markdown')
+                elif cmd == "📱Facebook":
+                    key = InlineKeyboardMarkup(inline_keyboard=[
+                            [InlineKeyboardButton(text='Set Username ✏️', callback_data='setfacebook')],
+                            [InlineKeyboardButton(text='Change Username ✏️', callback_data='changefacebook')],
+                    ])
+                    bot.sendMessage(chat_id , _myfacebook(chat_id), reply_markup=key, parse_mode='Markdown')
+                elif cmd == "setfacebook" or cmd == "changefacebook":
+                    msg = "*Input your Facebook username*"
+                    bot.sendMessage(chat_id, msg, parse_mode='Markdown')
+                elif cmd == "📷Instagram":
+                    key = InlineKeyboardMarkup(inline_keyboard=[
+                            [InlineKeyboardButton(text='Set Username ✏️', callback_data='setinstagram')],
+                            [InlineKeyboardButton(text='Change Username ✏️', callback_data='changeinstagram')],
+                    ])
+                    bot.sendMessage(chat_id , _myinstagram(chat_id), reply_markup=key, parse_mode='Markdown')
+                elif cmd == "setinstagram" or cmd == "changeinstagram":
+                    msg = "*Input your Instagram username*"
+                    bot.sendMessage(chat_id, msg, parse_mode='Markdown')
+                elif cmd == "☎️Youtube":
+                    key = InlineKeyboardMarkup(inline_keyboard=[
+                            [InlineKeyboardButton(text='Set Username ✏️', callback_data='setyoutube')],
+                            [InlineKeyboardButton(text='Change Username ✏️', callback_data='changeyoutube')],
+                    ])
+                    bot.sendMessage(chat_id , _myyoutube(chat_id), reply_markup=key, parse_mode='Markdown')
+                elif cmd == "setyoutube" or cmd == "changeyoutube":
+                    msg = "*Input your Youtube username*"
+                    bot.sendMessage(chat_id, msg, parse_mode='Markdown')
+                elif cmd == "🖊️Reddit":
+                    key = InlineKeyboardMarkup(inline_keyboard=[
+                            [InlineKeyboardButton(text='Set Username ✏️', callback_data='setreddit')],
+                            [InlineKeyboardButton(text='Change Username ✏️', callback_data='changereddit')],
+                    ])
+                    bot.sendMessage(chat_id , _myreddit(chat_id), reply_markup=key, parse_mode='Markdown')
+                elif cmd == "setreddit" or cmd == "changereddit":
+                    msg = "*Input your Reddit username*"
+                    bot.sendMessage(chat_id, msg, parse_mode='Markdown')
+                elif cmd == "👫 Referral":
+                    bot.sendMessage(chat_id, _mylink(chat_id, fname), parse_mode='Markdown')
                 elif func :
                     try:
                         bot.sendMessage(chat_id, func, parse_mode='Markdown')
@@ -439,7 +553,7 @@ def telegram(request):
                                 bot.sendMessage(chat_id, _start(fname),
                                     reply_markup=key, parse_mode="Markdown")
                             else:
-                                msg = "❌ Not verified"
+                                msg = "Get your 👫 Referral link first."
                                 bot.sendMessage(chat_id, msg, parse_mode="Markdown")
                         elif comma.cmd == "changewallet":
                             bot.sendMessage(chat_id, _changeeth_cn(chat_id, cmd.split()[0].lower()), parse_mode='Markdown')
@@ -865,7 +979,7 @@ def _mylink(chat_id, fname):
     fname = fname
     if Link.objects.filter(chat_id=chat_id).exists():
         links = Link.objects.get(chat_id=chat_id)
-        msg = f"*⏯️ Total Invites er: {links.referral} User(s)\n \n ⛔️ Earn 2 DLF per refferal! \n \n 🔗 Referral Link ⬇️\n https://telegram.me/cypherSpotBot?start={links.gen_c} *"
+        msg = f"*⏯️ Total Invites er: {links.referral} User(s)\n \n ⛔️ Earn 2 DLF per refferal! \n \n 🔗 Referral Link ⬇️\n https://telegram.me/godsrebornbot?start={links.gen_c} *"
         return msg
     else:
         try:
@@ -873,7 +987,7 @@ def _mylink(chat_id, fname):
         except:
             return "*Fill your social media info to get your link*"
         lin = Link.objects.get(chat_id=chat_id)
-        msg = f"*⏯️ Total Invites rt: {lin.referral} User(s)\n \n ⛔️ Earn 2 DLF per refferal! \n \n 🔗 Referral Link ⬇️\n https://telegram.me/cypherSpotBot?start={lin.gen_c}*"
+        msg = f"*⏯️ Total Invites rt: {lin.referral} User(s)\n \n ⛔️ Earn 2 DLF per refferal! \n \n 🔗 Referral Link ⬇️\n https://telegram.me/godsrebornbot?start={lin.gen_c}*"
         # send_msg(chat_id, msg)
         return msg
 
