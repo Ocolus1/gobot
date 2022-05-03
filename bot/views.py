@@ -17,7 +17,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 token = settings.TOKEN
 # webhook_url = f"https://goblin.cypherspot.dev/telegram/{secret}/"
-webhook_url = f"https://8eb0-160-152-198-93.eu.ngrok.io/telegram/"
+webhook_url = f"https://bf66-160-152-166-21.eu.ngrok.io/telegram/"
 bot = telepot.Bot(token)
 if webhook_url != bot.getWebhookInfo()['url']:
     bot.setWebhook(webhook_url)
@@ -214,7 +214,7 @@ def telegram(request):
                         msg = f"🤴 User : {link.fname} \n \n 💰 Balance : {link.points} points"
                         bot.sendMessage(chat_id, msg, parse_mode='Markdown')
                     else:
-                        msg = "*Fill your social media info to get your balance*"
+                        msg = "*Set Wallet Address and Fill your social media info to get your balance*"
                         bot.sendMessage(chat_id, msg, parse_mode='Markdown')
                 elif cmd == "👫 Referral":
                     bot.sendMessage(chat_id, _mylink(chat_id, fname), parse_mode='Markdown')
@@ -439,7 +439,7 @@ def telegram(request):
                         msg = f"🤴 User : {link.fname} \n \n 💰 Balance : {link.points} points"
                         bot.sendMessage(chat_id, msg, parse_mode='Markdown')
                     else:
-                        msg = "*Fill your social media info to get your balance*"
+                        msg = "*Set Wallet Address and Fill your social media info to get your balance*"
                         bot.sendMessage(chat_id, msg, parse_mode='Markdown')
                 elif cmd == "👫 Referral":
                     bot.sendMessage(chat_id, _mylink(chat_id, fname), parse_mode='Markdown')
@@ -926,7 +926,7 @@ def _myreddit(chat_id):
     if Reddit.objects.filter(chat_id=chat_id).exists(): 
         result = Reddit.objects.get(chat_id=chat_id)
         user = result.username
-        tot = "*🤴 Your username \\- {} .*".format(user)
+        tot = "*🤴 Your username - {} .*".format(user)
         return tot
     else:
         msg = "*You do not have a reddit handle.*"
@@ -979,15 +979,15 @@ def _mylink(chat_id, fname):
     fname = fname
     if Link.objects.filter(chat_id=chat_id).exists():
         links = Link.objects.get(chat_id=chat_id)
-        msg = f"*⏯️ Total Invites er: {links.referral} User(s)\n \n ⛔️ Earn 2 DLF per refferal! \n \n 🔗 Referral Link ⬇️\n https://telegram.me/godsrebornbot?start={links.gen_c} *"
+        msg = f"*⏯️ Total Invites er: {links.referral} User(s)\n \n ⛔️ Earn 2 GOB per refferal! \n \n 🔗 Referral Link ⬇️\n https://telegram.me/godsrebornbot?start={links.gen_c} *"
         return msg
     else:
         try:
-            l = Link.objects.create(chat_id=chat_id, fname=fname)
+            Link.objects.create(chat_id=chat_id, fname=fname)
         except:
-            return "*Fill your social media info to get your link*"
+            return "*Set Wallet Address and Fill your social media info to get your link*"
         lin = Link.objects.get(chat_id=chat_id)
-        msg = f"*⏯️ Total Invites rt: {lin.referral} User(s)\n \n ⛔️ Earn 2 DLF per refferal! \n \n 🔗 Referral Link ⬇️\n https://telegram.me/godsrebornbot?start={lin.gen_c}*"
+        msg = f"*⏯️ Total Invites rt: {lin.referral} User(s)\n \n ⛔️ Earn 2 GOB per refferal! \n \n 🔗 Referral Link ⬇️\n https://telegram.me/godsrebornbot?start={lin.gen_c}*"
         # send_msg(chat_id, msg)
         return msg
 
